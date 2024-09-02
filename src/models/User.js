@@ -1,6 +1,28 @@
 import { pool } from '../config/db.js'
 
 class User {
+  /**
+   * Buscar un usuario por su ID
+   * @param id ID del usuario a buscar
+   */
+  static async find (id) {
+    const [user] = await pool.execute(
+      'SELECT f_name, m_name, l_name, username, email, password, image FROM users WHERE user_id = ?',
+      [id]
+    )
+    return user[0]
+  }
+
+  /**
+   * Crear nuevo usuario
+   * @param fName Primer nombre
+   * @param mName Segundo nombre
+   * @param lName Apellidos
+   * @param username
+   * @param email
+   * @param password
+   * @param image Foto de perfil
+   */
   static async create ({
     fName,
     lName,
@@ -10,10 +32,6 @@ class User {
     mName,
     image
   }) {
-    if (!fName || !lName || !username || !email || !password) {
-      throw new Error('Faltan datos para el usuario')
-    }
-
     const camposObligatorios = [
       'f_name',
       'l_name',
@@ -34,12 +52,13 @@ class User {
     }
 
     const stringCamposObligatorios = camposObligatorios.join(', ')
-    const placeholders = camposObligatorios.map(() => '?')
-    const stringPlaceholders = placeholders.join(', ')
-    const user = await pool.execute(
-      `INSER INTO users(${stringCamposObligatorios}) VALUES (${stringPlaceholders})`,
-      datosGuardar
-    )
+    const placeholders = camposObligatorios.map(() => '?').join(', ')
+
+    const query = `INSERT INTO users(${stringCamposObligatorios}) VALUES (${placeholders})`
+    const [resultado] = await pool.execute(query, datosGuardar)
+    const user = await this.find(resultado.insertId)
+
+    delete user.password
 
     return user
   }
