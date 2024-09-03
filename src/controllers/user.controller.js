@@ -1,6 +1,15 @@
 import User from '../models/User.js'
 
 class UserController {
+  static async index (req, res) {
+    try {
+      const users = await User.all()
+      res.json(users)
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
+
   static async store (req, res) {
     try {
       const { fName, lName, username, email, password, mName, image } = req.body
@@ -20,6 +29,10 @@ class UserController {
     } catch (error) {
       res.status(500).json({ message: error.message })
     }
+  }
+
+  static async delete (req, res) {
+
   }
 }
 

@@ -1,13 +1,18 @@
 import { pool } from '../config/db.js'
 
 class User {
+  static async all () {
+    const [users] = await pool.execute('SELECT user_id, f_name, m_name, l_name, username, email, image FROM users')
+    return users
+  }
+
   /**
    * Buscar un usuario por su ID
    * @param id ID del usuario a buscar
    */
   static async find (id) {
     const [user] = await pool.execute(
-      'SELECT f_name, m_name, l_name, username, email, password, image FROM users WHERE user_id = ?',
+      'SELECT user_id, f_name, m_name, l_name, username, email, password, image FROM users WHERE user_id = ?',
       [id]
     )
     return user[0]
