@@ -68,7 +68,10 @@ class User {
     return user
   }
 
-  static async delete () {}
+  static async deleteByID (id) {
+    const [resultado] = await pool.execute('DELETE FROM users WHERE user_id = ?', [id])
+    return resultado
+  }
 
   static async read () {}
 
