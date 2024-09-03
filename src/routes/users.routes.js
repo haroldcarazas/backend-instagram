@@ -8,5 +8,7 @@ router.get('/', UserController.index)
 router.get('/:id', validateUserID, UserController.getByID)
 router.post('/', UserController.store)
 router.delete('/:id', validateUserID, UserController.delete)
+router.put('/:id', validateUserID, UserController.updatePut)
+router.patch('/:id', validateUserID, UserController.updatePatch)
 
 export default router

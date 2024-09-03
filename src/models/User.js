@@ -73,9 +73,63 @@ class User {
     return resultado
   }
 
-  static async read () {}
+  static async update ({
+    userId,
+    fName,
+    lName,
+    username,
+    email,
+    password,
+    mName,
+    image
+  }) {
+    let query = 'UPDATE users SET '
+    const camposActualizar = []
+    const valoresActualizar = []
 
-  static async update () {}
+    if (fName) {
+      camposActualizar.push('f_name = ?')
+      valoresActualizar.push(fName)
+    }
+
+    if (lName) {
+      camposActualizar.push('l_name = ?')
+      valoresActualizar.push(lName)
+    }
+
+    if (username) {
+      camposActualizar.push('username = ?')
+      valoresActualizar.push(username)
+    }
+
+    if (email) {
+      camposActualizar.push('email = ?')
+      valoresActualizar.push(email)
+    }
+
+    if (password) {
+      camposActualizar.push('password = ?')
+      valoresActualizar.push(password)
+    }
+
+    if (mName) {
+      camposActualizar.push('m_name = ?')
+      valoresActualizar.push(mName)
+    }
+
+    if (image) {
+      camposActualizar.push('image = ?')
+      valoresActualizar.push(image)
+    }
+
+    if (camposActualizar.length === 0) return undefined
+
+    query += camposActualizar.join(', ') + ' WHERE user_id = ?'
+    valoresActualizar.push(userId)
+
+    const [resultado] = await pool.execute(query, valoresActualizar)
+    return resultado
+  }
 }
 
 export default User

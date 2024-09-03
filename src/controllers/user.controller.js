@@ -52,6 +52,80 @@ class UserController {
       res.status(500).json({ message: error.message })
     }
   }
+
+  static async updatePut (req, res) {
+    try {
+      const { id } = req.params
+      const {
+        fName,
+        lName,
+        username,
+        email,
+        password,
+        mName,
+        image
+      } = req.body
+
+      if (!fName || !lName || !username || !email || !password || !mName || !image) return res.status(400).json({ message: 'Datos incompletos' })
+
+      const resultado = await User.update({
+        userId: id,
+        fName,
+        lName,
+        username,
+        email,
+        password,
+        mName,
+        image
+      })
+
+      if (resultado.affectedRows === 0) return res.status(400).json({ message: 'No se pudo actualizar el usuario' })
+
+      const user = await User.find(id)
+      delete user.password
+
+      res.json({ message: 'Usuario actualizado', data: user })
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
+
+  static async updatePatch (req, res) {
+    try {
+      const { id } = req.params
+      const {
+        fName,
+        lName,
+        username,
+        email,
+        password,
+        mName,
+        image
+      } = req.body
+
+      const resultado = await User.update({
+        userId: id,
+        fName,
+        lName,
+        username,
+        email,
+        password,
+        mName,
+        image
+      })
+
+      if (!resultado) return res.status(400).json({ message: 'No se enviaron datos para la actualización' })
+
+      if (resultado.affectedRows === 0) return res.status(400).json({ message: 'No se pudo actualizar el usuario' })
+
+      const user = await User.find(id)
+      delete user.password
+
+      res.json({ message: 'Usuario actualizado', data: user })
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
 }
 
 export default UserController
