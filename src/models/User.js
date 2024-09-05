@@ -1,8 +1,11 @@
 import { pool } from '../config/db.js'
+import bcrypt from 'bcrypt'
 
 class User {
   static async all () {
-    const [users] = await pool.execute('SELECT user_id, f_name, m_name, l_name, username, email, image FROM users')
+    const [users] = await pool.execute(
+      'SELECT user_id, f_name, m_name, l_name, username, email, image FROM users'
+    )
     return users
   }
 
@@ -10,10 +13,23 @@ class User {
    * Buscar un usuario por su ID
    * @param id ID del usuario a buscar
    */
-  static async find (id) {
+  static async findById (id) {
     const [user] = await pool.execute(
       'SELECT user_id, f_name, m_name, l_name, username, email, password, image FROM users WHERE user_id = ?',
       [id]
+    )
+    return user[0]
+  }
+
+  /**
+   * Buscar un usuario por una determinado columna
+   * @param columna Nombre de la columna en la base de datos
+   * @param valor Valor con el cual debe coincidir la columna
+   */
+  static async findOne (columna, valor) {
+    const [user] = await pool.execute(
+      `SELECT user_id, f_name, m_name, l_name, username, email, password, image FROM users WHERE ${columna} = ?`,
+      [valor]
     )
     return user[0]
   }
@@ -44,7 +60,8 @@ class User {
       'email',
       'password'
     ]
-    const datosGuardar = [fName, lName, username, email, password]
+    const encriptada = await bcrypt.hash(password, 10)
+    const datosGuardar = [fName, lName, username, email, encriptada]
 
     if (mName) {
       camposObligatorios.push('m_name')
@@ -61,7 +78,7 @@ class User {
 
     const query = `INSERT INTO users(${stringCamposObligatorios}) VALUES (${placeholders})`
     const [resultado] = await pool.execute(query, datosGuardar)
-    const user = await this.find(resultado.insertId)
+    const user = await this.findById(resultado.insertId)
 
     delete user.password
 
@@ -69,7 +86,10 @@ class User {
   }
 
   static async deleteByID (id) {
-    const [resultado] = await pool.execute('DELETE FROM users WHERE user_id = ?', [id])
+    const [resultado] = await pool.execute(
+      'DELETE FROM users WHERE user_id = ?',
+      [id]
+    )
     return resultado
   }
 
@@ -109,7 +129,8 @@ class User {
 
     if (password) {
       camposActualizar.push('password = ?')
-      valoresActualizar.push(password)
+      const encriptada = await bcrypt.hash(password, 10)
+      valoresActualizar.push(encriptada)
     }
 
     if (mName) {

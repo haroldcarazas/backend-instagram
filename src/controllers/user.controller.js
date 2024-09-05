@@ -81,7 +81,7 @@ class UserController {
 
       if (resultado.affectedRows === 0) return res.status(400).json({ message: 'No se pudo actualizar el usuario' })
 
-      const user = await User.find(id)
+      const user = await User.findById(id)
       delete user.password
 
       res.json({ message: 'Usuario actualizado', data: user })
@@ -118,7 +118,7 @@ class UserController {
 
       if (resultado.affectedRows === 0) return res.status(400).json({ message: 'No se pudo actualizar el usuario' })
 
-      const user = await User.find(id)
+      const user = await User.findById(id)
       delete user.password
 
       res.json({ message: 'Usuario actualizado', data: user })
